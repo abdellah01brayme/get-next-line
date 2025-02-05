@@ -12,39 +12,49 @@
 
 #include "get_next_line.h"
 
+char	*read_file(int fd)
+{
+	char	*buff;
+	ssize_t	len;
+
+	if (fd < 0 || BUFFER_SIZE < 1)
+		return (NULL);
+	buff = malloc (BUFFER_SIZE + 1);
+	if (!buff)
+		return (NULL);
+	len = read(fd, buff, BUFFER_SIZE);
+	if (len <= 0)
+		return (free(buff), NULL);
+	buff[len] = '\0';
+	return (buff);
+}
+
 char	*get_next_line(int fd)
 {
-	static char	buffer[BUFFER_SIZE + 1];
-	char		*save_line;
-	char		*to_return;
-	long		length;
+	static char	*stock = NULL;
+	char		*buff;
 
-	save_line = NULL;
-	while (fd != -1)
+	if (fd < 0 || BUFFER_SIZE < 1)
+		return (NULL);
+	while (!is_line(stock))
 	{
-		save_line = ft_strjoin(save_line, buffer);
-		if (is_line(save_line))
-		{
-			to_return = lin_to_return(save_line, buffer);
-			return (to_return);
-		}
-		length = read (fd, buffer, BUFFER_SIZE);
-		buffer[length] = '\0';
-		if (length <= 0)
-		{
-			if (ft_strlen(save_line) > 0)
-				return (buffer[0] = '\0', save_line);
-			free(save_line);
+		buff = read_file(fd);
+		if (!buff)
 			break ;
-		}
+		stock = ft_strjoin(stock, buff);
+		free(buff);
 	}
+	if (is_line(stock) || ft_strlen(stock))
+		return (get_new_line(&stock));
+	free(stock);
+	stock = NULL;
 	return (NULL);
 }
 
 int main()
 {
     char *p;
-    int fd = open("txt1",O_RDONLY);
+    int fd = 0;//open("dev/",O_RDONLY);
      int fd2 = open("write1",O_WRONLY );
     if (fd < 0 || fd2 < 0)
         return (1);

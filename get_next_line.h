@@ -25,7 +25,7 @@
 char	*ft_strjoin(char *save_line, char *buffer);
 int		is_line(char *save_line);
 size_t	ft_strlen(char *s);
-char	*lin_to_return(char *save_line, char *buffer);
+char	*get_new_line(char **stock);
 char	*get_next_line(int fd);
 
 #endif
